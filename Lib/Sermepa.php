@@ -76,14 +76,16 @@ class Sermepa extends Object {
 
         $api = new RedsysAPI;
 
-        $paramters = $api->decodeMerchantParameters($data);
-        $signature = $miObj->createMerchantSignatureNotif($this->_settings->secretKey, $data);
+        $parameters = $data["Ds_MerchantParameters"];
+        $signature = $api->createMerchantSignatureNotif($this->_settings->secretKey, $parameters);
 
         if ($data["Ds_Signature"] !== $signature) {
             throw new CakeException("Invalid signature in Sermepa notification.");
         }
 
-        $this->_notification = json_decode($paramters);
+        $parameters = $api->decodeMerchantParameters($parameters);
+        $this->_notification = json_decode($parameters);
+
         return $this->_notification;
     }
 

@@ -28,7 +28,7 @@ App::uses('Sermepa', 'Sermepa.Lib');
 
 class SermepaComponent extends Component {
 
-	public $serviceUrl;
+    public $serviceUrl;
 
 	public $merchantCode;
 
@@ -52,33 +52,40 @@ class SermepaComponent extends Component {
 
 	public $Controller;
 
-	public function __construct(ComponentCollection $collection, $settings = array()) {
-		if (Configure::read('Sermepa')) {
-			$settings = $settings + Configure::read('Sermepa');
-		}
-		parent::__construct($collection, $settings);
-	}
+    public function __construct(ComponentCollection $collection, $settings = array()) {
+        if (Configure::read('Sermepa')) {
+            $settings = $settings + Configure::read('Sermepa');
+        }
+        parent::__construct($collection, $settings);
+    }
 
-	public function startup(Controller $controller) {
-		$this->Controller = $controller;
-	}
+    public function startup(Controller $controller) {
+        $this->Controller = $controller;
+    }
 
-	public function createTransaction($order, $amount, $transactionType = '0') {
-		$Sermepa = new Sermepa($this);
-		$this->Controller->request->params['sermepaUrl'] = $Sermepa->getPostUrl();
-		$this->Controller->request->params['sermepaData'] = $Sermepa->getPostData($order, $amount, $transactionType);
-	}
+    public function createTransaction($order, $amount, $transactionType = '0') {
+        $Sermepa = new Sermepa($this);
+        $this->Controller->request->params['sermepaUrl'] = $Sermepa->getPostUrl();
+        $this->Controller->request->params['sermepaData'] = $Sermepa->getPostData($order, $amount, $transactionType);
+    }
 
-/**
- * @throws CakeException
- */
-	public function getNotification() {
-		if (!$this->Controller->request->is('post')) {
-			throw new CakeException("Sermepa notification not using POST.");
-		}
-		$Sermepa = new Sermepa($this);
-		return $Sermepa->getNotificationData($this->Controller->request->data);
-	}
+    /**
+     * @throws CakeException
+     */
+    public function getNotification() {
+        if (!$this->Controller->request->is('post')) {
+            throw new CakeException("Sermepa notification not using POST.");
+        }
+        $Sermepa = new Sermepa($this);
+        $data = $Sermepa->getNotificationData($this->Controller->request->data);
+
+        $data = json_decode(json_encode($data), true);
+        $notification = new stdClass();
+        foreach ($data as $key => $value) {
+            $notification->{lcfirst(str_ireplace('Ds_', '', $key))} = $data[$key];
+        }
+
+        return $notification;
+    }
 
 }
-
