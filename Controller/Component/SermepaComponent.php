@@ -77,8 +77,15 @@ class SermepaComponent extends Component {
 			throw new CakeException("Sermepa notification not using POST.");
 		}
 		$Sermepa = new Sermepa($this);
-		return $Sermepa->getNotificationData($this->Controller->request->data);
+		$data = $Sermepa->getNotificationData($this->Controller->request->data);
+
+		$data = json_decode(json_encode($data), true);
+		$notification = new stdClass();
+		foreach ($data as $key => $value) {
+			$notification->{lcfirst(str_ireplace('Ds_', '', $key))} = $data[$key];
+		}
+
+		return $notification;
 	}
 
 }
-
