@@ -2,6 +2,9 @@
 
 # CakePHP Sermepa Plugin
 
+NOTICE: This plugin has been discontinued. The new version is available at
+https://github.com/berarma/cakephp-redsys.
+
 With this plugin is possible to do online payments using the Sermepa/Redsýs TPV
 service.
 
