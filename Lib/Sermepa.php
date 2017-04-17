@@ -58,9 +58,9 @@ class Sermepa extends Object {
 	public function getPostData($order, $amount, $transactionType = 0) {
 		$order = str_pad($order, 12, '0', STR_PAD_LEFT);
 		if ($this->_settings->extendedSignature) {
-			$signature = sha1($amount . $order . $this->_settings->merchantCode . $this->_settings->currency . $transactionType . $this->_settings->merchantUrl . $this->_settings->secretKey);
+			$signature = hash("sha256", $amount . $order . $this->_settings->merchantCode . $this->_settings->currency . $transactionType . $this->_settings->merchantUrl . $this->_settings->secretKey);
 		} else {
-			$signature = sha1($amount . $order . $this->_settings->merchantCode . $this->_settings->currency . $this->_settings->secretKey);
+			$signature = hash("sha256", $amount . $order . $this->_settings->merchantCode . $this->_settings->currency . $this->_settings->secretKey);
 		}
 		return array(
 			'Ds_Merchant_Amount' => $amount,
@@ -103,7 +103,7 @@ class Sermepa extends Object {
 		$this->_notification->authorisationCode = $data['Ds_AuthorisationCode'];
 		$this->_notification->consumerLanguage = $data['Ds_ConsumerLanguage'];
 		$this->_notification->cardType = $data['Ds_Card_Type'];
-		$signature = sha1($this->_notification->amount . $this->_notification->order . $this->_notification->merchantCode . $this->_notification->currency . $this->_notification->response . $this->_settings->secretKey);
+		$signature = hash("sha256", $this->_notification->amount . $this->_notification->order . $this->_notification->merchantCode . $this->_notification->currency . $this->_notification->response . $this->_settings->secretKey);
 		if (strtolower($this->_notification->signature) !== $signature) {
 			throw new CakeException("Invalid signature in Sermepa notification.");
 		}
